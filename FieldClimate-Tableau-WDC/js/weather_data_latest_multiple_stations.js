@@ -82,7 +82,7 @@
         $.ajax({
             type : 'GET',
             dataType : 'json',
-            url: '../json/weather_stations_mx.json',
+            url: 'https://alexsalr.github.io/FieldClimate-Tableau-WDC/json/weather_stations_mx.json',
             success : function(sdata) {
                 var stations = sdata.stations;
                 //console.log(stations);
