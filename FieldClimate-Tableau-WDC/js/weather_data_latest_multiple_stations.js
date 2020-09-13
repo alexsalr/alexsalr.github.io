@@ -134,6 +134,7 @@
                             }
                     });
             };
+            doneCallback();
             // end for loop
     };
     
