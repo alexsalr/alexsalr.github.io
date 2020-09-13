@@ -1,6 +1,6 @@
 (function () {
     var myConnector = tableau.makeConnector();
-
+    
     myConnector.getSchema = function(schemaCallback) {
         // Schema for weather data
         var weather_variables_url_cols = [{
@@ -66,30 +66,17 @@
     };
     
     
-    
-    
     myConnector.getData = function(table, doneCallback) {
-        function parseDate(input) {
-          var parts = input.match(/(\d+)/g);
-          // new Date(year, month [, date [, hours[, minutes[, seconds[, ms]]]]])
-          return new Date(parts[0], parts[1]-1, parts[2]); // months are 0-based
-        }
-
-
         
-        //read json file
+        var stationsJson = JSON.parse('{"stations": [{"station_id": "00002C5C","station_name": "Arandas","producing_area": "Arandas","filter_name": "Arandas"},{"station_id": "00002CDA","station_name": "Baja California, Chapala","producing_area": "San Quintin","filter_name": "Baja (Chapala)"},{"station_id": "00203866","station_name": "Baja California, Colonet","producing_area": "San Quintin","filter_name": "Baja (Colonet)"},            {"station_id": "00001BD3","station_name": "baja","producing_area": "San Quintin","filter_name": "Baja (Los Pinos)"},            {"station_id": "00002CCE","station_name": "Baja California, Muñoz","producing_area": "San Quintin","filter_name": "Baja (Muñoz)"},            {"station_id": "00002CCD","station_name": "Baja California, San Quintin","producing_area": "San Quintin","filter_name": "Baja (San Quintín)"},            {"station_id": "002037B0","station_name": "Baja California, San Vicente","producing_area": "San Quintin","filter_name": "Baja (San Vicente)"},            {"station_id": "00002C5A","station_name": "CD Guzmán","producing_area": "Ciudad Guzman","filter_name": "Ciudad Guzman (Cd. Guzman)"},            {"station_id": "00002C57","station_name": "Sayula","producing_area": "Ciudad Guzman","filter_name": "Ciudad Guzman (Sayula)"},            {"station_id": "00002C59","station_name": "Huamantla","producing_area": "Viveros","filter_name": "El Seco (Huamantla)"},            {"station_id": "00002C54","station_name": "Jocotepec","producing_area": "Jocotepec","filter_name": "Jocotepec"},            {"station_id": "00002C53","station_name": "Juanacatlán","producing_area": "Jocotepec","filter_name": "Jocotepec (Juanacatlán)"},            {"station_id": "00002C5D","station_name": "Los Reyes Loma","producing_area": "Los Reyes","filter_name": "Los Reyes (Loma)"},            {"station_id": "00002C5F","station_name": "Los Reyes Otelo","producing_area": "Los Reyes","filter_name": "Los Reyes (Otelo)"},            {"station_id": "00002C51","station_name": "Mazamitla","producing_area": "Mazamitla","filter_name": "Mazamitla"},            {"station_id": "00002C56","station_name": "Purepero","producing_area": "Purepero","filter_name": "Purepero"},            {"station_id": "00002C60","station_name": "Valles","producing_area": "Tala","filter_name": "Tala (Valles)"},            {"station_id": "00002C58","station_name": "Tangancícuaro","producing_area": "Tangancicuaro","filter_name": "Tangancicuaro"},            {"station_id": "00002C67","station_name": "Santiago","producing_area": "Tangancicuaro","filter_name": "Tangancicuaro (Santiago)"},            {"station_id": "00002C5B","station_name": "Tapalpa","producing_area": "Tapalpa","filter_name": "Tapalpa"},            {"station_id": "00203DC5","station_name": "Copándaro","producing_area": "Tupataro","filter_name": "Tupataro (Copándaro)"},            {"station_id": "00002C55","station_name": "Huiramba","producing_area": "Tupataro","filter_name": "Tupataro (Huiramba)"},            {"station_id": "00002C6A","station_name": "Zapotitan","producing_area": "Tuxcueca","filter_name": "Tuxcueca (Zapotitan)"},            {"station_id": "00002C52","station_name": "Jacona","producing_area": "Zamora","filter_name": "Zamora (Jacona)"}]}');
+        
+        var stations = stationsJson.stations;
         //loop stations
-        $.ajax({
-            type : 'GET',
-            dataType : 'json',
-            url: 'https://alexsalr.github.io/FieldClimate-Tableau-WDC/json/weather_stations_mx.json',
-            success : function(sdata) {
-                var stations = sdata.stations;
-                //console.log(stations);
-                var j = 0;
-                
-                for (j = 0, leng = stations.length; j < leng; j++) {
-                    //console.log(stations[j].station_id);
+        
+        var j = 0;
+                    
+        for (j = 0, leng = stations.length; j < leng; j++) {
+    
                     var url = "https://api.fieldclimate.com/v1";
                                         
                     var dateObj = JSON.parse(tableau.connectionData),
@@ -105,8 +92,7 @@
                         hash = CryptoJS.HmacSHA256(msg, CryptoJS.enc.Utf8.parse(privateKey)),
                         signature = hash.toString(CryptoJS.enc.Hex);
                             
-                        $.ajax({
-                            url: apiURI+apiRoute,
+                    $.ajax({url: apiURI+apiRoute,
                             dataType: "json",
                             headers: {'Authorization':"hmac " + publicKey + ":" + signature,
                                 'Request-Date':dateStamp,
@@ -146,16 +132,9 @@
                                  // log error in browser
                                 console.log(e.message);
                             }
-                    });            
-            }
-            doneCallback();
-            //end for loop
-            },
-            error: function (e) {
-                // log error in browser
-                console.log(e.message);
-                }
-            });
+                    });
+            };
+            // end for loop
     };
     
     tableau.registerConnector(myConnector);
